@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TextShield - Final Animated Version</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- CryptoJS Library for AES and DES -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <!-- JSEncrypt Library for RSA -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsencrypt/3.2.1/jsencrypt.min.js"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
+    <!-- External CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="text-gray-200">
+    <!-- Animated Background Canvas -->
+    <canvas id="matrix-bg"></canvas>
+
+    <div class="container mx-auto p-4 sm:p-6 lg:p-8 max-w-4xl relative z-10">
+        <header class="text-center mb-10">
+            <h1 id="main-title" class="text-4xl sm:text-5xl font-bold text-white header-glow h-16"></h1>
+            <p id="tagline" class="text-md text-cyan-400 mt-2 tracking-widest h-6"></p>
+        </header>
+
+        <!-- Main content container -->
+        <div class="relative mt-12">
+            <main class="relative z-10 bg-gray-800/50 backdrop-blur-sm border border-cyan-500/30 p-6 rounded-2xl cyber-shadow">
+                <!-- Algorithm Selection -->
+                <div class="mb-6">
+                    <label for="algorithm" class="block text-lg font-semibold mb-2 text-cyan-300">1. SELECT ENCRYPTION ALGORITHM</label>
+                    <select id="algorithm" class="w-full p-3 bg-gray-900 border-2 border-gray-600 rounded-lg focus:outline-none cyber-glow-input transition text-white">
+                        <option value="aes">AES (Advanced Encryption Standard)</option>
+                        <option value="des">DES (Data Encryption Standard)</option>
+                        <option value="rsa">RSA (Rivest-Shamir-Adleman)</option>
+                    </select>
+                </div>
+
+                <!-- Algorithm-specific UI sections -->
+                <div id="symmetric-key-section" class="mb-6">
+                    <label for="symmetric-key" class="block text-lg font-semibold mb-2 text-cyan-300">2. ENTER SECRET KEY</label>
+                    <input type="password" id="symmetric-key" placeholder="Enter a strong secret key" class="w-full p-3 bg-gray-900 border-2 border-gray-600 rounded-lg focus:outline-none cyber-glow-input transition text-white">
+                </div>
+
+                <div id="rsa-key-section" class="hidden mb-6 space-y-4">
+                     <div>
+                        <h2 class="text-lg font-semibold mb-2 text-cyan-300">2. RSA KEY PAIR</h2>
+                        <button id="generate-rsa-keys" class="w-full bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-indigo-500 transition duration-300 mb-4 cyber-button">GENERATE NEW KEY PAIR</button>
+                    </div>
+                    <div>
+                        <label for="public-key" class="block text-sm font-medium text-gray-400 mb-1">PUBLIC KEY (FOR ENCRYPTION)</label>
+                        <textarea id="public-key" rows="4" placeholder="Your public key will appear here..." class="w-full p-3 bg-gray-900 border-2 border-gray-600 rounded-lg focus:outline-none cyber-glow-input transition text-white"></textarea>
+                    </div>
+                    <div>
+                        <label for="private-key" class="block text-sm font-medium text-gray-400 mb-1">PRIVATE KEY (FOR DECRYPTION)</label>
+                        <textarea id="private-key" rows="4" placeholder="Your private key will appear here..." class="w-full p-3 bg-gray-900 border-2 border-gray-600 rounded-lg focus:outline-none cyber-glow-input transition text-white"></textarea>
+                    </div>
+                </div>
+
+                <!-- Input and Output Text Areas -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <label for="plain-text" class="block text-lg font-semibold mb-2 text-cyan-300">3. INPUT DATA</label>
+                        <textarea id="plain-text" rows="6" placeholder="Type or paste your message here..." class="w-full p-3 bg-gray-900 border-2 border-gray-600 rounded-lg focus:outline-none cyber-glow-input transition text-white"></textarea>
+                    </div>
+                    <div>
+                        <label for="cipher-text" class="block text-lg font-semibold mb-2 text-cyan-300">OUTPUT DATA</label>
+                        <textarea id="cipher-text" rows="6" placeholder="Result will be generated here..." readonly class="w-full p-3 bg-black border-2 border-gray-700 rounded-lg text-green-400 cursor-not-allowed"></textarea>
+                    </div>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <button id="encrypt-btn" class="flex-1 bg-cyan-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-cyan-500 hover:shadow-lg hover:shadow-cyan-500/50 transition duration-300 text-lg cyber-button flex items-center justify-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                        ENCRYPT
+                    </button>
+                    <button id="decrypt-btn" class="flex-1 bg-green-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-green-500 hover:shadow-lg hover:shadow-green-500/50 transition duration-300 text-lg cyber-button flex items-center justify-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 9.9-1"></path></svg>
+                        DECRYPT
+                    </button>
+                </div>
+                
+                 <!-- Message Box -->
+                <div id="message-box" class="hidden mt-4 p-4 rounded-lg text-white text-center font-medium"></div>
+
+            </main>
+        </div>
+
+        <!-- Algorithm Information Section -->
+        <footer class="mt-12">
+            <h2 class="text-2xl font-bold text-center mb-6 text-cyan-300 tracking-widest">ALGORITHM INTEL</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-gray-800/50 p-5 rounded-xl border border-blue-500/30">
+                    <h3 class="font-semibold text-xl mb-2 text-blue-400">AES</h3>
+                    <p class="text-gray-400 text-sm">A **symmetric** key algorithm. Fast, efficient, and the global standard for bulk data encryption. Uses a single key for locking and unlocking data.</p>
+                </div>
+                <div class="bg-gray-800/50 p-5 rounded-xl border border-green-500/30">
+                    <h3 class="font-semibold text-xl mb-2 text-green-400">DES</h3>
+                    <p class="text-gray-400 text-sm">An older **symmetric** standard. Now considered legacy and vulnerable due to its short key length. Included for educational & historical context.</p>
+                </div>
+                <div class="bg-gray-800/50 p-5 rounded-xl border border-indigo-500/30">
+                    <h3 class="font-semibold text-xl mb-2 text-indigo-400">RSA</h3>
+                    <p class="text-gray-400 text-sm">An **asymmetric** key algorithm. Uses a public key to encrypt and a private key to decrypt. Slower, but vital for secure key exchange and digital signatures.</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- External JavaScript -->
+    <script src="script.js"></script>
+</body>
+</html>
