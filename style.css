@@ -1,0 +1,77 @@
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #000; /* Black background for the canvas */
+    margin: 0;
+    overflow: hidden; /* Hide scrollbars from body */
+}
+
+#main-title {
+    font-family: 'Orbitron', sans-serif;
+}
+
+#matrix-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1; /* Behind the content */
+}
+
+.container {
+    z-index: 10; /* In front of the canvas */
+    height: 100vh;
+    overflow-y: auto; /* Allow content to scroll if needed */
+    /* Hide scrollbar for Chrome, Safari and Opera */
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.container::-webkit-scrollbar {
+    display: none;
+}
+
+
+.cyber-shadow {
+    box-shadow: 0 0 15px rgba(0, 190, 255, 0.2), 0 0 5px rgba(0, 190, 255, 0.3);
+}
+.cyber-glow-input:focus {
+     border-color: #00bfff;
+     box-shadow: 0 0 10px #00bfff;
+}
+.cyber-button {
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+.cyber-button:before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.4s ease, height 0.4s ease;
+}
+.cyber-button:hover:before {
+    width: 200%;
+    height: 200%;
+}
+textarea, input {
+    font-family: 'Roboto Mono', monospace;
+}
+.header-glow {
+    text-shadow: 0 0 8px rgba(0, 190, 255, 0.7);
+}
+/* Typing animation cursor */
+.typing-cursor::after {
+    content: '█';
+    animation: blink 1s step-end infinite;
+}
+@keyframes blink {
+    50% { opacity: 0; }
+}
